@@ -3,105 +3,100 @@
  * currently exports to Microsoft-esque CSVs
  *
  */
-function table_export_csv(a, filename, tableClasses) {
+function table_export_csv(a, filename, selector) {
+    // cells that are used up because of a rowspan or colspan are marked with
+    // this special value (which is just an alias for null, but helps with readability)
+    var USED_UP = null;
 
-	function parse_string_for_csv(input_string) {
-		// if there are double-quotes or commas in the string
-		// we need to escape the quotes and surround the whole thing with quotes
-		output_string = input_string.replace(/"/g, "\"\"");			// escape quotes
+    function parse_string_for_csv(input_string) {
+        // escape quote characters
+        var output_string = input_string.replace(/"/g, "\"\"");
 
-		if (input_string.search("[\",]") != -1) {					// enclose in quotes
-			output_string = "\"" + output_string + "\""
-		}
-		return output_string;
-	}
+        // the value contains a comma, quote or a non printable character ASCII
+        // character, so quote it
+        if (input_string.search(/[",]|[^ -~]/) != -1) {
+            output_string = "\"" + output_string + "\"";
+        }
+        return output_string;
+    }
 
-	var cellArray = [];				// this will be a 2D array with all our data. need to do it this way to deal with rowspan
+    // get the table DOM elements from the selectors
+    var tables = [];
+    var matches = document.querySelectorAll(selector);
+    for(var i = 0; i < matches.length; i++){
+        tables.push(matches[i]);
+    }
 
-	var currentRowIndex = 0;
-	var maxColumnCount = 0;
+    // calculate the max number of cols across all the tables, and how many
+    // rows the CSV will have
+    var rows = 0;
+    var max_cols = 0;
+    tables.forEach(function(table){
+        rows += table.rows.length;
+        for(var i = 0; i < table.rows.length; i++){
+            max_cols = Math.max(table.rows[i].cells.length, max_cols);
+        }
+    });
+    // we add a blank row between each table
+    rows += tables.length - 1;
 
-	tableClasses.forEach(function(tableClass) {
+    // initialize the array to store all the table data
+    var cellArray = [];
+    for(var r = 0; r < rows; r++){
+        cellArray.push(new Array(max_cols));
+    }
 
-		tableElements = document.querySelectorAll('.' + tableClass);
+    // loop through every table, every row, and every column, and add the cell
+    // to the cellArray
+    var row = 0;
+    var col = 0;
+    tables.forEach(function(table){
+        for(var i = 0; i < table.rows.length; i++){
+            for(var j = 0, col = 0; j < table.rows[i].cells.length; j++){
+                var element = table.rows[i].cells[j];
+                // walk along the cellArray until we find a cell which isn't
+                // already USED_UP
+                while(cellArray[row][col] === USED_UP){
+                    col++;
+                    if(col >= max_cols){
+                        col = 0;
+                        row++;
+                    }
+                }
 
-		for(var t = 0; t < tableElements.length; t++) {
+                var colspan = parseInt(element.getAttribute('colspan'), 10) || 1;
+                var rowspan = parseInt(element.getAttribute('rowspan'), 10) || 1;
+                // mark all the relevant cells as being used up because of the
+                // colspan/rowspan
+                for(var r = row; r < row + rowspan; r++){
+                    for(var c = col; c < col + colspan; c++){
+                        cellArray[r][c] = USED_UP;
+                    }
+                }
 
-			table = tableElements[t];
+                // actually write the value to the cellArray
+                cellArray[row][col] = parse_string_for_csv(element.innerText);
+                col += 1;
+            }
+            row += 1;
+        }
+        row += 1; // add an extra row between tables
+    });
 
-			var rowElements = table.querySelectorAll('tr');
+    // build a CSV string from the cellArray
+    var csvString = [];
+    for(var r = 0; r < cellArray.length; r++){
+        csvString.push(cellArray[r].join(","));
+    }
+    csvString = csvString.join("\r\n");
 
-			for(var i = 0; i < rowElements.length; i++) {
-				var cellElements = rowElements[i].querySelectorAll('th, td');
+    // now turn it into a blob in local storage:
+    var blob = new Blob([csvString], {type : 'text/csv'});
 
-				var columnCount = 0;
-				var currentRow = [];
+    var url = URL.createObjectURL(blob);        // get the URL to the blob
 
-				if(currentRowIndex < cellArray.length) {
-					currentRow = cellArray[currentRowIndex];
-				}
-				else {
-					currentRow = []
-					cellArray.push(currentRow);
-				}
-
-				for(var j = 0; j < cellElements.length; j++) {
-					element = cellElements[j];
-
-					currentRow.push(parse_string_for_csv(element.innerHTML));
-
-					colspan = parseInt(element.getAttribute('colspan')) || 1;
-					rowspan = parseInt(element.getAttribute('rowspan')) || 1;
-
-					columnCount += colspan;
-
-					if (rowspan > 1 || colspan > 1) {
-
-						var missingRows = currentRowIndex + rowspan - cellArray.length;
-
-						for(; missingRows > 0; missingRows--) {
-							cellArray.push([]);
-						}
-
-						for(var spanRowIndex = currentRowIndex; spanRowIndex < currentRowIndex + rowspan; spanRowIndex++) {
-
-							var missingColumns = spanRowIndex == currentRowIndex ? colspan - 1 : colspan;
-
-							for (; missingColumns > 0; missingColumns--) {
-								cellArray[spanRowIndex].push('');
-							}
-						}
-					}
-				}
-				if (columnCount > maxColumnCount) maxColumnCount = columnCount;
-				currentRowIndex++;
-			}
-			cellArray.push([]);		// add an empty line between sub-tables
-			currentRowIndex++;
-		}
-	});
-	cellArray.pop();		// get rid of the last row, which is blank because of spacing between sub-tables.
-
-	var csvString = '';						// this will store our CSV
-	cellArray.forEach(function(currentRow) {
-		csvString += currentRow.join();			// convert into a comma-delimited string
-
-		// some gross stuff to make sure that there are the same number of commas on each row
-		// we need to add 1 comma less on empty rows, for reasons that are probably expressible mathemtically, but really annoying to do so.
-		for (var missingColumns = maxColumnCount - (currentRow.length || 1); missingColumns > 0; missingColumns--) {
-			csvString += ',';			// fill out the rest of the row
-		}
-		csvString += '\r\n';
-	});
-
-	// now turn it into a blob in local storage:
-	var blob = new Blob([csvString], {type : 'text/csv'});
-
-	var url = URL.createObjectURL(blob);		// get the URL to the blob
-
-	// points the 'a' element at our generated file
-	// this works because this function is called before the link is evaluated
-	a.setAttribute('href', url);
-	a.setAttribute('download', filename);
-	a.setAttribute('onclick', null);
+    // points the 'a' element at our generated file
+    // this works because this function is called before the link is evaluated
+    a.setAttribute('href', url);
+    a.setAttribute('download', filename);
 }

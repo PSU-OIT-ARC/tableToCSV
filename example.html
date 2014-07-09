@@ -1,118 +1,83 @@
 <html>
 <head>
-	<title>
-		Example
-	</title>
+    <title>
+        Example
+    </title>
 
-	<script src="table-export.js"></script>
+    <script src="table-export.js"></script>
 
 </head>
 <body>
-	<table class='export1' filename='export.csv' border="1">
-		<thead>
-			<tr>
-				<th>Name:</th>
-				<th>Occupation:</th>
-				<th>Age:</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Bond, James</td>
-				<td>Alcoholic</td>
-				<td>37</td>
-			</tr>
-			<tr>
-				<td>David "Zeb" Cook</td>
-				<td>Dungeon Master</td>
-				<td>97</td>
-			</tr>
-			<tr>
-				<td>Mr. Potato Head, Esquire</td>
-				<td>"Comedian"</td>
-				<td>3</td>
-			</tr>
-			<tr>
-				<td>John Carmack</td>
-				<td>Nerd</td>
-				<td>45</td>
-			</tr>
-		</tbody>
-	</table>
+    <table id="export1" border="1" class="occupations">
+        <thead>
+            <tr>
+                <th>Name:</th>
+                <th>Occupation:</th>
+                <th>Age:</th>
+                <th>Additional Information</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Bond, James</td>
+                <td>Alcoholic</td>
+                <td>37</td>
+                <td>Shaken, not stirred</td>
+            </tr>
+            <tr>
+                <td>David "Zeb" Cook</td>
+                <td rowspan="2" colspan="2">Dungeon Master</td>
+                <td>Unusual, I think</td>
+            </tr>
+            <tr>
+                <td>Mr. Potato Head, Esquire</td>
+            </tr>
+            <tr>
+                <td>John Carmack</td>
+                <td>Nerd</td>
+                <td>45</td>
+                <td>Sqrt <br /> <strong>w/o</strong> division</td>
+            </tr>
+        </tbody>
+    </table>
+    <table id='export2' border="1" class="occupations">
+        <thead>
+            <tr>
+                <th>Name:</th>
+                <th>Occupation:</th>
+                <th>Age:</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Bond, James</td>
+                <td>Alcoholic</td>
+                <td>37</td>
+            </tr>
+            <tr>
+                <td>David "Zeb" Cook</td>
+                <td>Dungeon Master</td>
+                <td>97</td>
+            </tr>
+            <tr>
+                <td>Mr. Potato Head, Esquire</td>
+                <td>"Comedian"</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>John Carmack</td>
+                <td>Nerd</td>
+                <td>45</td>
+            </tr>
+        </tbody>
+    </table>
 
-	<table class='export1' filename='export.csv' border="1">
-		<thead>
-			<tr>
-				<th>Name:</th>
-				<th>Occupation:</th>
-				<th>Age:</th>
-				<th>Gender:</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Billy Bob Thorton</td>
-				<td>Grizzler</td>
-				<td>68</td>
-				<td>Male</td>
-			</tr>
-			<tr>
-				<td>What'sit Who'sit</td>
-				<td>President</td>
-				<td colspan="2">235</td>
-			</tr>
-			<tr>
-				<td>Farrah Fawcett</td>
-				<td>Lady With Hair</td>
-				<td>60</td>
-				<td>Female</td>
-			</tr>
-			<tr>
-				<td colspan="2">Johnny Boy Soprano</td>
-				<td>90</td>
-				<td>Male</td>
-			</tr>
-		</tbody>
-	</table>
 
-	<table class='span_testing' filename='export.csv' border="1">
-		<thead>
-			<tr>
-				<th>Name:</th>
-				<th>Occupation:</th>
-				<th>Age:</th>
-				<th>Gender:</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td colspan="2" rowspan="2">Billy Bob Thorton</td>
-				<td>68</td>
-				<td>Male</td>
-			</tr>
-			<tr>
-				<td>235</td>
-				<td>Male</td>
-			</tr>
-			<tr>
-				<td>Farrah Fawcett</td>
-				<td>Lady With Hair</td>
-				<td>60</td>
-				<td>Female</td>
-			</tr>
-			<tr>
-				<td colspan="2">Johnny Boy Soprano</td>
-				<td>90</td>
-				<td>Male</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<ul>
-		<li><a href="#" onclick="table_export_csv(this, 'single_table.csv', ['span_testing'])">Export a single table</a></li>
-		<li><a href="#" onclick="table_export_csv(this, 'single_class.csv', ['export1'])">Export a single class of tables</a></li>
-		<li><a href="#" onclick="table_export_csv(this, 'test.csv', ['export1', 'span_testing'])">Export multiple classes of tables</a></li>
-	</ul>
+    <ul>
+        <li><a href="#" onclick="table_export_csv(this, 'single_table_degenerate.csv', '#export1')">Export a complex single table</a></li>
+        <li><a href="#" onclick="table_export_csv(this, 'single_table.csv', '#export2')">Export a simple single table</a></li>
+        <li><a href="#" onclick="table_export_csv(this, 'multiple_tables.csv', '.occupations')">Export Multiple Tables</a></li>
+    </ul>
 
 
 
