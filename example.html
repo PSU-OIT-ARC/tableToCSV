@@ -3,17 +3,17 @@
 	<title>
 		Example
 	</title>
-	
+
 	<script src="table-export.js"></script>
-	
-</head>	
-<body>	
-	<table class='export1' filename='export.csv'>
+
+</head>
+<body>
+	<table class='export1' filename='export.csv' border="1">
 		<thead>
 			<tr>
 				<th>Name:</th>
 				<th>Occupation:</th>
-				<th>Age:</th>			
+				<th>Age:</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -37,15 +37,15 @@
 				<td>Nerd</td>
 				<td>45</td>
 			</tr>
-		</tbody>		
+		</tbody>
 	</table>
 
-	<table class='export1' filename='export.csv'>
+	<table class='export1' filename='export.csv' border="1">
 		<thead>
 			<tr>
 				<th>Name:</th>
 				<th>Occupation:</th>
-				<th>Age:</th>		
+				<th>Age:</th>
 				<th>Gender:</th>
 			</tr>
 		</thead>
@@ -70,17 +70,17 @@
 			<tr>
 				<td colspan="2">Johnny Boy Soprano</td>
 				<td>90</td>
-				<td>Male</td>								
+				<td>Male</td>
 			</tr>
-		</tbody>		
+		</tbody>
 	</table>
 
-	<table class='span_testing' filename='export.csv'>
+	<table class='span_testing' filename='export.csv' border="1">
 		<thead>
 			<tr>
 				<th>Name:</th>
 				<th>Occupation:</th>
-				<th>Age:</th>		
+				<th>Age:</th>
 				<th>Gender:</th>
 			</tr>
 		</thead>
@@ -90,7 +90,7 @@
 				<td>68</td>
 				<td>Male</td>
 			</tr>
-			<tr>				
+			<tr>
 				<td>235</td>
 				<td>Male</td>
 			</tr>
@@ -103,18 +103,18 @@
 			<tr>
 				<td colspan="2">Johnny Boy Soprano</td>
 				<td>90</td>
-				<td>Male</td>								
+				<td>Male</td>
 			</tr>
-		</tbody>		
+		</tbody>
 	</table>
 
 	<ul>
-		<li><a href="#" onclick="table_export_csv(this, 'single_table.csv', ['span_testing'])">Export a single table</a></li>		
+		<li><a href="#" onclick="table_export_csv(this, 'single_table.csv', ['span_testing'])">Export a single table</a></li>
 		<li><a href="#" onclick="table_export_csv(this, 'single_class.csv', ['export1'])">Export a single class of tables</a></li>
 		<li><a href="#" onclick="table_export_csv(this, 'test.csv', ['export1', 'span_testing'])">Export multiple classes of tables</a></li>
 	</ul>
 
 
-	
+
 </body>
 </html>
