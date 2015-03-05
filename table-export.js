@@ -11,6 +11,7 @@ function table_export_csv(a, filename, selector) {
     function parse_string_for_csv(input_string) {
         // escape quote characters
         var output_string = input_string.replace(/"/g, "\"\"");
+        output_string = output_string.replace(/^\s+|\s+$/g, "");
 
         // the value contains a comma, quote or a non printable character ASCII
         // character, so quote it
@@ -75,7 +76,7 @@ function table_export_csv(a, filename, selector) {
                 }
 
                 // actually write the value to the cellArray
-                cellArray[row][col] = parse_string_for_csv(element.innerText);
+                cellArray[row][col] = parse_string_for_csv(element.textContent);
                 col += 1;
             }
             row += 1;
