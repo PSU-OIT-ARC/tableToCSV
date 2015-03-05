@@ -4,7 +4,16 @@
         Example
     </title>
 
-    <script src="table-export.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.16/require.min.js"></script>
+    <script>
+        // there's really no reason to use AMD in this example, but this can be
+        // loaded with it
+        require(['tableToCSV'], function(tableToCSV){
+            window.tableToCSV = tableToCSV
+        });
+
+        // for the lazy, just do <script src="tableToCSV.js"></script>
+    </script>
 
 </head>
 <body>
@@ -21,7 +30,10 @@
             <tr>
                 <td>Bond, James</td>
                 <td>Alcoholic</td>
-                <td>37</td>
+                <td>37
+                    <!-- this is extra whitespace! -->
+
+                </td>
                 <td>Shaken, not stirred</td>
             </tr>
             <tr>
@@ -74,9 +86,9 @@
 
 
     <ul>
-        <li><a href="#" onclick="table_export_csv(this, 'single_table_degenerate.csv', '#export1')">Export a complex single table</a></li>
-        <li><a href="#" onclick="table_export_csv(this, 'single_table.csv', '#export2')">Export a simple single table</a></li>
-        <li><a href="#" onclick="table_export_csv(this, 'multiple_tables.csv', '.occupations')">Export Multiple Tables</a></li>
+        <li><a href="#" onclick="tableToCSV(this, 'single_table_degenerate.csv', '#export1')">Export a complex single table</a></li>
+        <li><a href="#" onclick="tableToCSV(this, 'single_table.csv', '#export2')">Export a simple single table</a></li>
+        <li><a href="#" onclick="tableToCSV(this, 'multiple_tables.csv', '.occupations')">Export Multiple Tables</a></li>
     </ul>
 
 

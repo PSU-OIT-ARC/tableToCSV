@@ -1,24 +1,33 @@
 /*!
- * table exporter
+ * tableToCSV
  * currently exports to Microsoft-esque CSVs
- *
+ * Compatible with AMD using UMD (https://github.com/umdjs/umd/blob/master/amdWeb.js)
  */
-function table_export_csv(a_tag, filename, selector) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(factory);
+    } else {
+        // Browser globals
+        root.tableToCSV = factory();
+    }
+}(this, function () {
+    return function(aTag, filename, selector) {
     // cells that are used up because of a rowspan or colspan are marked with
     // this special value (which is just an alias for null, but helps with readability)
     var USED_UP = null;
 
-    function parse_string_for_csv(input_string) {
+    function formatForCSV(str) {
         // escape quote characters
-        var output_string = input_string.replace(/"/g, "\"\"");
-        output_string = output_string.replace(/^\s+|\s+$/g, "");
+        var output = str.replace(/"/g, "\"\"");
+        output = output.replace(/^\s+|\s+$/g, "");
 
         // the value contains a comma, quote or a non printable character ASCII
         // character, so quote it
-        if (input_string.search(/[",]|[^ -~]/) != -1) {
-            output_string = "\"" + output_string + "\"";
+        if (str.search(/[",]|[^ -~]/) != -1) {
+            output = "\"" + output + "\"";
         }
-        return output_string;
+        return output;
     }
 
     // get the table DOM elements from the selectors
@@ -31,11 +40,11 @@ function table_export_csv(a_tag, filename, selector) {
     // calculate the max number of cols across all the tables, and how many
     // rows the CSV will have
     var rows = 0;
-    var max_cols = 0;
+    var maxCols = 0;
     tables.forEach(function(table){
         rows += table.rows.length;
         for(var i = 0; i < table.rows.length; i++){
-            max_cols = Math.max(table.rows[i].cells.length, max_cols);
+            maxCols = Math.max(table.rows[i].cells.length, maxCols);
         }
     });
     // we add a blank row between each table
@@ -44,7 +53,7 @@ function table_export_csv(a_tag, filename, selector) {
     // initialize the array to store all the table data
     var cellArray = [];
     for(var r = 0; r < rows; r++){
-        cellArray.push(new Array(max_cols));
+        cellArray.push(new Array(maxCols));
     }
 
     // loop through every table, every row, and every column, and add the cell
@@ -59,7 +68,7 @@ function table_export_csv(a_tag, filename, selector) {
                 // already USED_UP
                 while(cellArray[row][col] === USED_UP){
                     col++;
-                    if(col >= max_cols){
+                    if(col >= maxCols){
                         col = 0;
                         row++;
                     }
@@ -76,7 +85,7 @@ function table_export_csv(a_tag, filename, selector) {
                 }
 
                 // actually write the value to the cellArray
-                cellArray[row][col] = parse_string_for_csv(element.textContent);
+                cellArray[row][col] = formatForCSV(element.textContent);
                 col += 1;
             }
             row += 1;
@@ -97,13 +106,14 @@ function table_export_csv(a_tag, filename, selector) {
     try {
         // internet explorer, of course, does things differently
         window.navigator.msSaveOrOpenBlob(blob, filename);
-        a_tag.setAttribute('href', "#nowhere");
+        aTag.setAttribute('href', "#nowhere");
     } catch(e){
         var url = URL.createObjectURL(blob);        // get the URL to the blob
 
         // points the 'a' element at our generated file
         // this works because this function is called before the link is evaluated
-        a_tag.setAttribute('href', url);
-        a_tag.setAttribute('download', filename);
+        aTag.setAttribute('href', url);
+        aTag.setAttribute('download', filename);
     }
-}
+}}));
+
