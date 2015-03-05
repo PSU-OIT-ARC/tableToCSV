@@ -3,7 +3,7 @@
  * currently exports to Microsoft-esque CSVs
  *
  */
-function table_export_csv(a, filename, selector) {
+function table_export_csv(a_tag, filename, selector) {
     // cells that are used up because of a rowspan or colspan are marked with
     // this special value (which is just an alias for null, but helps with readability)
     var USED_UP = null;
@@ -94,10 +94,16 @@ function table_export_csv(a, filename, selector) {
     // now turn it into a blob in local storage:
     var blob = new Blob([csvString], {type : 'text/csv'});
 
-    var url = URL.createObjectURL(blob);        // get the URL to the blob
+    try {
+        // internet explorer, of course, does things differently
+        window.navigator.msSaveOrOpenBlob(blob, filename);
+        a_tag.setAttribute('href', "#nowhere");
+    } catch(e){
+        var url = URL.createObjectURL(blob);        // get the URL to the blob
 
-    // points the 'a' element at our generated file
-    // this works because this function is called before the link is evaluated
-    a.setAttribute('href', url);
-    a.setAttribute('download', filename);
+        // points the 'a' element at our generated file
+        // this works because this function is called before the link is evaluated
+        a_tag.setAttribute('href', url);
+        a_tag.setAttribute('download', filename);
+    }
 }
