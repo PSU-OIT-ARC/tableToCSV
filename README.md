@@ -1,3 +1,5 @@
+_This is used only in the VCP project and should perhaps be moved into that project._
+
 # tableToCSV
 
 Export HTML tables to CSV entirely on the client.
